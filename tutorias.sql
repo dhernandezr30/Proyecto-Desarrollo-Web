@@ -77,3 +77,46 @@ CREATE TABLE inscripciones (
     CONSTRAINT fk_ins_sol FOREIGN KEY (solicitud_id) REFERENCES solicitudes(id) ON DELETE CASCADE,
     CONSTRAINT uq_inscripcion UNIQUE (tutoria_id, estudiante_id)
 );
+
+-- ---------- DATOS DE PRUEBA ----------
+-- profesor123 / estudiante123 (hash bcrypt)
+INSERT INTO profesores (nombre, correo, password) VALUES
+('Ana Morales',  'ana@uni.edu',   '$2b$10$xH1VwLC8pPDfGU9uU1Y0bep863ic9YbCo8cTcDDCNctyPD1.wYDZ.'),
+('Luis Herrera', 'luis@uni.edu',  '$2b$10$xH1VwLC8pPDfGU9uU1Y0bep863ic9YbCo8cTcDDCNctyPD1.wYDZ.');
+
+INSERT INTO estudiantes (nombre, correo, password) VALUES
+('Carlos Perez',   'carlos@uni.edu',  '$2b$10$jnD/uq6Q6sDyWS/mJ80XyuTUkcPYIRE/9GVyVnkWW4TLcuB/T/lZC'),
+('Maria Lopez',    'maria@uni.edu',   '$2b$10$jnD/uq6Q6sDyWS/mJ80XyuTUkcPYIRE/9GVyVnkWW4TLcuB/T/lZC'),
+('Jose Ramirez',   'jose@uni.edu',    '$2b$10$jnD/uq6Q6sDyWS/mJ80XyuTUkcPYIRE/9GVyVnkWW4TLcuB/T/lZC'),
+('Sofia Castillo', 'sofia@uni.edu',   '$2b$10$jnD/uq6Q6sDyWS/mJ80XyuTUkcPYIRE/9GVyVnkWW4TLcuB/T/lZC'),
+('Diego Ortiz',    'diego@uni.edu',   '$2b$10$jnD/uq6Q6sDyWS/mJ80XyuTUkcPYIRE/9GVyVnkWW4TLcuB/T/lZC'),
+('Lucia Mendez',   'lucia@uni.edu',   '$2b$10$jnD/uq6Q6sDyWS/mJ80XyuTUkcPYIRE/9GVyVnkWW4TLcuB/T/lZC');
+
+INSERT INTO materias (nombre) VALUES
+('Matematica'), ('Fisica'), ('Programacion'), ('Quimica'), ('Idiomas');
+
+-- Las fechas son relativas al dia de la importacion (siempre quedan en el futuro)
+INSERT INTO tutorias (profesor_id, materia_id, tema, titulo, descripcion, fecha, hora_inicio, hora_fin, cupo_min, cupo_max, estado) VALUES
+(1, 1, 'Algebra',           'Refuerzo de algebra basica',   'Ecuaciones, factorizacion y sistemas.', CURDATE() + INTERVAL 5 DAY, '08:00', '10:00', 3, 5,  'abierta'),
+(1, 1, 'Calculo diferencial','Limites y derivadas',          'Repaso previo al parcial.',             CURDATE() + INTERVAL 8 DAY, '14:00', '16:00', 10, 20, 'abierta'),
+(2, 3, 'PHP y MySQL',       'Introduccion a PHP con MySQL', 'CRUD y consultas preparadas.',          CURDATE() + INTERVAL 6 DAY, '10:00', '12:00', 2, 4,  'abierta'),
+(2, 2, 'Cinematica',        'Movimiento rectilineo',        'Ejercicios de MRU y MRUA.',             CURDATE() + INTERVAL 3 DAY, '09:00', '11:00', 2, 3,  'confirmada');
+
+-- Tutoria 1 (min 3, max 5): 2 aceptadas, 1 pendiente, 1 rechazada
+INSERT INTO solicitudes (tutoria_id, estudiante_id, estado, fecha_resolucion) VALUES
+(1, 1, 'aceptada',  NOW()),
+(1, 2, 'aceptada',  NOW()),
+(1, 3, 'pendiente', NULL),
+(1, 4, 'rechazada', NOW()),
+-- Tutoria 3 (min 2, max 4): 1 aceptada, 1 pendiente
+(3, 1, 'aceptada',  NOW()),
+(3, 5, 'pendiente', NULL),
+-- Tutoria 4 (min 2, max 3, confirmada): 3 aceptadas = cupo lleno
+(4, 2, 'aceptada',  NOW()),
+(4, 5, 'aceptada',  NOW()),
+(4, 6, 'aceptada',  NOW()),
+-- Solicitud cancelada por el estudiante
+(2, 3, 'cancelada', NOW());
+
+INSERT INTO inscripciones (tutoria_id, estudiante_id, solicitud_id)
+SELECT tutoria_id, estudiante_id, id FROM solicitudes WHERE estado = 'aceptada';
