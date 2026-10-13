@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mis solicitudes - Sistema de Tutorías</title>
+  <meta name="description" content="Historial de tus solicitudes de tutoría y su estado: pendiente, aceptada, rechazada o cancelada.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:title" content="Mis solicitudes - Sistema de Tutorías">
+  <meta property="og:description" content="Historial de tus solicitudes de tutoría y su estado.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sistema de Tutorías">
+  <meta property="og:locale" content="es_GT">
+</head>
+<body>
+  <header class="encabezado">
+    <div class="contenido">
+      <p class="marca">Sistema de Tutorías</p>
+      <nav class="menu" id="menu" aria-label="Menú principal"></nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>Mis solicitudes</h1>
+    <p class="suave">Historial de todas tus solicitudes, antes y después de ser resueltas por el profesor.</p>
+
+    <div class="caja">
+      <div class="campo-corto">
+        <label for="f_estado">Filtrar por estado</label>
+        <select id="f_estado">
+          <option value="">Todas</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="aceptada">Aceptada</option>
+          <option value="rechazada">Rechazada</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="caja tabla-scroll">
+      <table>
+        <caption class="solo-lectores">Solicitudes de tutoría</caption>
+        <thead>
+          <tr><th scope="col">Tutoría</th><th scope="col">Materia / tema</th><th scope="col">Profesor</th><th scope="col">Fecha</th><th scope="col">Solicitada</th><th scope="col">Resuelta</th><th scope="col">Estado</th><th scope="col"><span class="solo-lectores">Acciones</span></th></tr>
+        </thead>
+        <tbody id="filas"></tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detalle de tutoría - Sistema de Tutorías</title>
+  <meta name="description" content="Detalle de la tutoría: tema, horario, cupos disponibles y solicitudes de los estudiantes.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:title" content="Detalle de tutoría - Sistema de Tutorías">
+  <meta property="og:description" content="Tema, horario y cupos de la tutoría.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sistema de Tutorías">
+  <meta property="og:locale" content="es_GT">
+</head>
+<body>
+  <header class="encabezado">
+    <div class="contenido">
+      <p class="marca">Sistema de Tutorías</p>
+      <nav class="menu" id="menu" aria-label="Menú principal"></nav>
+    </div>
+  </header>
+
+  <main>
+    <p><a href="tutorias.html">&larr; Volver a tutorías</a></p>
+
+    <section id="detalle" class="caja" aria-live="polite">Cargando...</section>
+
+    <!-- Solo el profesor dueño -->
+    <section id="zonaSolicitudes" class="caja oculto" aria-labelledby="tituloSolicitudes">
+      <h2 id="tituloSolicitudes">Solicitudes de estudiantes</h2>
+      <p class="suave">Al aceptar una solicitud el estudiante ocupa un cupo. No se puede superar el cupo máximo.</p>
+      <div class="tabla-scroll">
+        <table>
+          <caption class="solo-lectores">Solicitudes de esta tutoría</caption>
+          <thead>
+            <tr><th scope="col">Estudiante</th><th scope="col">Correo</th><th scope="col">Solicitada</th><th scope="col">Resuelta</th><th scope="col">Estado</th><th scope="col"><span class="solo-lectores">Acciones</span></th></tr>
+          </thead>
+          <tbody id="filas"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

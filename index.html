@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar sesión - Sistema de Tutorías</title>
+  <meta name="description" content="Inicia sesión en el Sistema de Tutorías para solicitar tutorías académicas o gestionar las que ofreces como profesor.">
+  <meta property="og:title" content="Sistema de Tutorías">
+  <meta property="og:description" content="Consulta tutorías por materia y tema, solicita un cupo y sigue el estado de tus solicitudes.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sistema de Tutorías">
+  <meta property="og:locale" content="es_GT">
+</head>
+<body>
+  <main class="centrado">
+    <section class="caja" aria-labelledby="titulo">
+      <h1 id="titulo">Sistema de Tutorías</h1>
+      <p class="suave">Inicia sesión como profesor o estudiante.</p>
+
+      <form id="formLogin" novalidate>
+        <label for="correo">Correo</label>
+        <input type="email" id="correo" name="correo" autocomplete="username" required>
+
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+        <label class="opcion" for="recordar">
+          <input type="checkbox" id="recordar" name="recordar"> Recordarme en este equipo (30 días)
+        </label>
+
+        <p class="error-campo" id="error" role="alert"></p>
+        <button type="submit" class="boton ancho">Entrar</button>
+      </form>
+
+      <p class="suave sin-margen-abajo">¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
+    </section>
+  </main>
+</body>
+</html>
