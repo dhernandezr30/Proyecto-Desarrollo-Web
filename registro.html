@@ -43,5 +43,44 @@
       <p class="suave sin-margen-abajo">¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
     </section>
   </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    $("#formRegistro").addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      const error = $("#error");
+      const datos = {
+        rol: $("#rol").value,
+        nombre: $("#nombre").value.trim(),
+        correo: $("#correo").value.trim(),
+        password: $("#password").value,
+      };
+      error.textContent = "";
+
+      if (datos.nombre.length < 3) {
+        error.textContent = "El nombre debe tener al menos 3 caracteres";
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(datos.correo)) {
+        error.textContent = "El correo no es válido";
+        return;
+      }
+      if (datos.password.length < 6) {
+        error.textContent = "La contraseña debe tener al menos 6 caracteres";
+        return;
+      }
+      if (datos.password !== $("#password2").value) {
+        error.textContent = "Las contraseñas no coinciden";
+        return;
+      }
+
+      try {
+        await accion("api/registro.php", "POST", datos);
+        setTimeout(() => { location.href = "index.html"; }, 1200);
+      } catch (err) {
+        error.textContent = err.message;
+      }
+    });
+  </script>
 </body>
 </html>
