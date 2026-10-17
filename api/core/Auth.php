@@ -19,6 +19,19 @@ class Auth
         return self::restaurarDesdeCookie($pdo);
     }
 
+    // Exige sesion y, opcionalmente, un rol ("profesor" o "estudiante")
+    public static function requiere(PDO $pdo, ?string $rol = null): array
+    {
+        $usuario = self::usuario($pdo);
+        if (!$usuario) {
+            Response::error("Debes iniciar sesión", -1, 401);
+        }
+        if ($rol !== null && $usuario["rol"] !== $rol) {
+            Response::error("No tienes permiso para esta acción", -1, 403);
+        }
+        return $usuario;
+    }
+
     // Tabla de cada rol ("profesor" => "profesores")
     public static function tabla(string $rol): ?string
     {
