@@ -36,5 +36,35 @@
       <p class="suave sin-margen-abajo">¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
     </section>
   </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    // Si ya hay sesion activa, ir directo al panel
+    api("api/sesion.php").then(() => { location.href = "panel.html"; }).catch(() => {});
+
+    $("#formLogin").addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      const error = $("#error");
+      const correo = $("#correo").value.trim();
+      const password = $("#password").value;
+      error.textContent = "";
+
+      if (correo === "" || password === "") {
+        error.textContent = "Ingresa tu correo y contraseña";
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(correo)) {
+        error.textContent = "El correo no es válido";
+        return;
+      }
+
+      try {
+        await api("api/login.php", "POST", { correo, password, recordar: $("#recordar").checked });
+        location.href = "panel.html";
+      } catch (err) {
+        error.textContent = err.message;
+      }
+    });
+  </script>
 </body>
 </html>
