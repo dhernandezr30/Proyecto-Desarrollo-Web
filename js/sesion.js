@@ -31,3 +31,4 @@ const pintarMenu = (usuario) => {
     location.href = "index.html";
   });
 };
+
