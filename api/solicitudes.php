@@ -1,0 +1,70 @@
+<?php
+require_once(__DIR__ . "/Connection.php");
+require_once(__DIR__ . "/core/Request.php");
+require_once(__DIR__ . "/core/Auth.php");
+require_once(__DIR__ . "/core/Cupos.php");
+
+$pdo = new Connection();
+$u = Auth::requiere($pdo);
+$metodo = $_SERVER["REQUEST_METHOD"];
+
+// Cancela la transaccion abierta y responde con error
+function abortar(PDO $pdo, string $mensaje, int $status = 400): void
+{
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    Response::error($mensaje, -1, $status);
+}
+
+if ($metodo === "GET") {
+    if ($u["rol"] === "estudiante") {
+        // Historial completo de mis solicitudes
+        $st = $pdo->prepare("SELECT s.id, s.estado, s.fecha_solicitud, s.fecha_resolucion,
+                t.id AS tutoria_id, t.titulo, t.tema, m.nombre AS materia, p.nombre AS profesor,
+                t.fecha, t.hora_inicio, t.hora_fin, t.estado AS estado_tutoria
+            FROM solicitudes s
+            JOIN tutorias t ON t.id = s.tutoria_id
+            JOIN materias m ON m.id = t.materia_id
+            JOIN profesores p ON p.id = t.profesor_id
+            WHERE s.estudiante_id = ?
+            ORDER BY s.fecha_solicitud DESC");
+        $st->execute([$u["id"]]);
+        Response::success($st->fetchAll());
+    }
+
+    // Profesor: solicitudes de una de sus tutorias
+    $tid = (int)($_GET["tutoria_id"] ?? 0);
+    $chk = $pdo->prepare("SELECT 1 FROM tutorias WHERE id = ? AND profesor_id = ?");
+    $chk->execute([$tid, $u["id"]]);
+    if (!$chk->fetch()) {
+        Response::error("Tutoría no encontrada", -1, 404);
+    }
+
+    $st = $pdo->prepare("SELECT s.id, s.estado, s.fecha_solicitud, s.fecha_resolucion, e.nombre AS estudiante, e.correo
+        FROM solicitudes s JOIN estudiantes e ON e.id = s.estudiante_id
+        WHERE s.tutoria_id = ?
+        ORDER BY FIELD(s.estado, 'pendiente', 'aceptada', 'rechazada', 'cancelada'), s.fecha_solicitud");
+    $st->execute([$tid]);
+    Response::success($st->fetchAll());
+}
+
+// El estudiante solicita una tutoria
+if ($metodo === "POST") {
+    Auth::requiere($pdo, "estudiante");
+    $tid = (int)(Request::body()["tutoria_id"] ?? 0);
+
+    $pdo->beginTransaction();
+    $st = $pdo->prepare("SELECT * FROM tutorias WHERE id = ? FOR UPDATE");
+    $st->execute([$tid]);
+    $t = $st->fetch();
+    if (!$t) {
+        abortar($pdo, "Tutoría no encontrada", 404);
+    }
+
+    $pdo->prepare("INSERT INTO solicitudes (tutoria_id, estudiante_id) VALUES (?, ?)")->execute([$tid, $u["id"]]);
+    $pdo->commit();
+    Response::success(null, "Solicitud enviada, queda pendiente de aprobación", 201);
+}
+
+Response::error("Método no permitido", -1, 405);
