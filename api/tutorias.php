@@ -64,6 +64,15 @@ function validar_tutoria(array $d): array
     return $c;
 }
 
+// Traslape: el mismo profesor no puede tener dos tutorias activas a la misma hora
+function hay_traslape(PDO $pdo, int $profesorId, array $c, int $excluirId = 0): bool
+{
+    $st = $pdo->prepare("SELECT 1 FROM tutorias WHERE profesor_id = ? AND fecha = ? AND estado <> 'cancelada'
+        AND id <> ? AND hora_inicio < ? AND hora_fin > ? LIMIT 1");
+    $st->execute([$profesorId, $c["fecha"], $excluirId, $c["hora_fin"], $c["hora_inicio"]]);
+    return (bool)$st->fetch();
+}
+
 function materia_existe(PDO $pdo, int $id): bool
 {
     $st = $pdo->prepare("SELECT 1 FROM materias WHERE id = ?");
@@ -95,6 +104,11 @@ if ($metodo === "GET") {
         if (!$t) {
             Response::error("Tutoría no encontrada", -1, 404);
         }
+        if ($u["rol"] === "estudiante") {
+            $s = $pdo->prepare("SELECT id, estado FROM solicitudes WHERE tutoria_id = ? AND estudiante_id = ?");
+            $s->execute([$t["id"], $u["id"]]);
+            $t["mi_solicitud"] = $s->fetch() ?: null;
+        }
         Response::success($t);
     }
 
@@ -107,6 +121,19 @@ if ($metodo === "GET") {
     $st->execute($args);
     $lista = $st->fetchAll();
 
+    // Para el estudiante, marca en cuales ya tiene solicitud
+    if ($u["rol"] === "estudiante") {
+        $s = $pdo->prepare("SELECT tutoria_id, estado FROM solicitudes WHERE estudiante_id = ?");
+        $s->execute([$u["id"]]);
+        $mias = [];
+        foreach ($s->fetchAll() as $fila) {
+            $mias[$fila["tutoria_id"]] = $fila["estado"];
+        }
+        foreach ($lista as &$t) {
+            $t["mi_solicitud_estado"] = $mias[$t["id"]] ?? null;
+        }
+        unset($t);
+    }
     Response::success($lista);
 }
 
@@ -115,6 +142,9 @@ if ($metodo === "POST") {
     $c = validar_tutoria(Request::body());
     if (!materia_existe($pdo, $c["materia_id"])) {
         Response::error("La materia no existe");
+    }
+    if (hay_traslape($pdo, $u["id"], $c)) {
+        Response::error("Ya tienes una tutoría en ese horario", -1, 409);
     }
 
     $st = $pdo->prepare("INSERT INTO tutorias (profesor_id, materia_id, tema, titulo, descripcion, fecha, hora_inicio, hora_fin, cupo_min, cupo_max)
@@ -153,6 +183,9 @@ if ($metodo === "PUT") {
     }
     if ($t["estado"] === "confirmada" && $ocupados < $c["cupo_min"]) {
         Response::error("La tutoría está confirmada: el cupo mínimo no puede superar a los inscritos actuales (" . $ocupados . ")");
+    }
+    if (hay_traslape($pdo, $u["id"], $c, (int)$t["id"])) {
+        Response::error("Ya tienes una tutoría en ese horario", -1, 409);
     }
 
     $st = $pdo->prepare("UPDATE tutorias SET materia_id=?, tema=?, titulo=?, descripcion=?, fecha=?, hora_inicio=?, hora_fin=?, cupo_min=?, cupo_max=? WHERE id=?");
