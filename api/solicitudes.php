@@ -61,8 +61,29 @@ if ($metodo === "POST") {
     if (!$t) {
         abortar($pdo, "Tutoría no encontrada", 404);
     }
+    if ($t["estado"] === "cancelada") {
+        abortar($pdo, "Esta tutoría fue cancelada");
+    }
+    if ($t["fecha"] < date("Y-m-d")) {
+        abortar($pdo, "Esta tutoría ya pasó");
+    }
+    if (Cupos::ocupados($pdo, $tid) >= (int)$t["cupo_max"]) {
+        abortar($pdo, "Sin cupos disponibles", 409);
+    }
 
-    $pdo->prepare("INSERT INTO solicitudes (tutoria_id, estudiante_id) VALUES (?, ?)")->execute([$tid, $u["id"]]);
+    $st = $pdo->prepare("SELECT id, estado FROM solicitudes WHERE tutoria_id = ? AND estudiante_id = ?");
+    $st->execute([$tid, $u["id"]]);
+    $previa = $st->fetch();
+
+    if ($previa) {
+        // Solo se puede volver a solicitar si el propio estudiante la cancelo
+        if ($previa["estado"] !== "cancelada") {
+            abortar($pdo, "Ya tienes una solicitud para esta tutoría (" . $previa["estado"] . ")", 409);
+        }
+        $pdo->prepare("UPDATE solicitudes SET estado='pendiente', fecha_solicitud=NOW(), fecha_resolucion=NULL WHERE id=?")->execute([$previa["id"]]);
+    } else {
+        $pdo->prepare("INSERT INTO solicitudes (tutoria_id, estudiante_id) VALUES (?, ?)")->execute([$tid, $u["id"]]);
+    }
     $pdo->commit();
     Response::success(null, "Solicitud enviada, queda pendiente de aprobación", 201);
 }
