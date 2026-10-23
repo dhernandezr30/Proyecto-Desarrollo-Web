@@ -47,6 +47,9 @@ const tarjeta = (t) => {
   const nombre = esc(t.titulo);
   let botones = `<a class="boton secundario chico" href="tutoria.html?id=${t.id}" aria-label="Ver detalle de ${nombre}">Ver detalle</a>`;
 
+  if (usuario.rol === "estudiante" && t.estado !== "cancelada") {
+    botones += ` <button type="button" class="boton chico" data-accion="solicitar" data-id="${t.id}" aria-label="Solicitar ${nombre}">Solicitar</button>`;
+  }
   if (esDueno) {
     botones += ` <button type="button" class="boton chico" data-accion="editar" data-id="${t.id}" aria-label="Editar ${nombre}">Editar</button>
                  <button type="button" class="boton peligro chico" data-accion="eliminar" data-id="${t.id}" aria-label="Eliminar ${nombre}">Eliminar</button>`;
@@ -72,7 +75,11 @@ $("#lista").addEventListener("click", async (evento) => {
   const id = Number(boton.dataset.id);
 
   try {
-    if (boton.dataset.accion === "editar") {
+    if (boton.dataset.accion === "solicitar") {
+      boton.disabled = true;
+      await accion("api/solicitudes.php", "POST", { tutoria_id: id });
+      cargar();
+    } else if (boton.dataset.accion === "editar") {
       abrirFormulario(await api("api/tutorias.php?id=" + id));
     } else if (boton.dataset.accion === "eliminar") {
       if (!confirm("¿Eliminar esta tutoría? Se borrarán también sus solicitudes e inscripciones.")) return;
