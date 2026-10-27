@@ -47,8 +47,15 @@ const tarjeta = (t) => {
   const nombre = esc(t.titulo);
   let botones = `<a class="boton secundario chico" href="tutoria.html?id=${t.id}" aria-label="Ver detalle de ${nombre}">Ver detalle</a>`;
 
-  if (usuario.rol === "estudiante" && t.estado !== "cancelada") {
-    botones += ` <button type="button" class="boton chico" data-accion="solicitar" data-id="${t.id}" aria-label="Solicitar ${nombre}">Solicitar</button>`;
+  if (usuario.rol === "estudiante") {
+    const solicitud = t.mi_solicitud_estado;
+    if (solicitud && solicitud !== "cancelada") {
+      botones += ` ${insignia(solicitud)}`;
+    } else if (t.estado !== "cancelada" && Number(t.ocupados) < Number(t.cupo_max)) {
+      botones += ` <button type="button" class="boton chico" data-accion="solicitar" data-id="${t.id}" aria-label="Solicitar ${nombre}">Solicitar</button>`;
+    } else if (Number(t.ocupados) >= Number(t.cupo_max)) {
+      botones += ' <span class="suave">Sin cupos</span>';
+    }
   }
   if (esDueno) {
     botones += ` <button type="button" class="boton chico" data-accion="editar" data-id="${t.id}" aria-label="Editar ${nombre}">Editar</button>
