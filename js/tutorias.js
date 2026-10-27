@@ -8,11 +8,13 @@ const iniciar = async () => {
   // Materias para el filtro y para el formulario
   const materias = await api("api/materias.php");
   for (const m of materias) {
+    $("#f_materia").add(new Option(m.nombre, m.id));
     $("#materia_id").add(new Option(m.nombre, m.id));
   }
 
   if (usuario.rol === "profesor") {
     $("#zonaProfesor").classList.remove("oculto");
+    $("#divMias").classList.remove("oculto");
   }
 
   // Si viene ?editar=ID desde el detalle, abre el formulario con esa tutoria
@@ -31,6 +33,12 @@ const iniciar = async () => {
 // ---------- Listado ----------
 const cargar = async () => {
   const params = new URLSearchParams();
+  if ($("#f_materia").value) params.set("materia_id", $("#f_materia").value);
+  if ($("#f_tema").value.trim()) params.set("tema", $("#f_tema").value.trim());
+  if ($("#f_fecha").value) params.set("fecha", $("#f_fecha").value);
+  if ($("#f_profesor").value.trim()) params.set("profesor", $("#f_profesor").value.trim());
+  if ($("#f_estado").value) params.set("estado", $("#f_estado").value);
+  if ($("#f_mias").checked) params.set("mias", "1");
 
   try {
     const lista = await api("api/tutorias.php?" + params.toString());
@@ -97,6 +105,16 @@ $("#lista").addEventListener("click", async (evento) => {
     avisar(error.message, "error");
     cargar();
   }
+});
+
+$("#filtros").addEventListener("submit", (evento) => {
+  evento.preventDefault();
+  cargar();
+});
+
+$("#btnLimpiar").addEventListener("click", () => {
+  $("#filtros").reset();
+  cargar();
 });
 
 // ---------- Formulario crear / editar ----------
