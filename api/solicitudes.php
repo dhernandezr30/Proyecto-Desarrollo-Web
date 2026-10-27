@@ -88,4 +88,76 @@ if ($metodo === "POST") {
     Response::success(null, "Solicitud enviada, queda pendiente de aprobación", 201);
 }
 
+// El profesor acepta o rechaza
+if ($metodo === "PUT") {
+    Auth::requiere($pdo, "profesor");
+    $d = Request::body();
+    $sid = (int)($d["id"] ?? 0);
+    $nuevo = $d["estado"] ?? "";
+    if (!in_array($nuevo, ["aceptada", "rechazada"], true)) {
+        Response::error("Estado inválido");
+    }
+
+    $pdo->beginTransaction();
+    $st = $pdo->prepare("SELECT s.*, t.profesor_id, t.estado AS estado_tutoria, t.cupo_max
+        FROM solicitudes s JOIN tutorias t ON t.id = s.tutoria_id WHERE s.id = ? FOR UPDATE");
+    $st->execute([$sid]);
+    $s = $st->fetch();
+    if (!$s) {
+        abortar($pdo, "Solicitud no encontrada", 404);
+    }
+    if ((int)$s["profesor_id"] !== $u["id"]) {
+        abortar($pdo, "Esta solicitud no es de una tutoría tuya", 403);
+    }
+    if ($s["estado"] !== "pendiente") {
+        abortar($pdo, "La solicitud ya fue resuelta (" . $s["estado"] . ")", 409);
+    }
+    if ($s["estado_tutoria"] === "cancelada") {
+        abortar($pdo, "La tutoría está cancelada");
+    }
+
+    if ($nuevo === "aceptada") {
+        // Bloquea la fila de la tutoria para que dos aceptaciones simultaneas no sobrepasen el cupo
+        $pdo->prepare("SELECT id FROM tutorias WHERE id = ? FOR UPDATE")->execute([$s["tutoria_id"]]);
+        if (Cupos::ocupados($pdo, (int)$s["tutoria_id"]) >= (int)$s["cupo_max"]) {
+            abortar($pdo, "Sin cupos disponibles: se alcanzó el cupo máximo", 409);
+        }
+        $pdo->prepare("INSERT INTO inscripciones (tutoria_id, estudiante_id, solicitud_id) VALUES (?, ?, ?)")
+            ->execute([$s["tutoria_id"], $s["estudiante_id"], $s["id"]]);
+    }
+    $pdo->prepare("UPDATE solicitudes SET estado = ?, fecha_resolucion = NOW() WHERE id = ?")->execute([$nuevo, $sid]);
+    $pdo->commit();
+    Response::success(null, "Solicitud " . $nuevo);
+}
+
+// El estudiante cancela su solicitud (pendiente o ya aceptada)
+if ($metodo === "DELETE") {
+    Auth::requiere($pdo, "estudiante");
+    $sid = (int)(Request::body()["id"] ?? $_GET["id"] ?? 0);
+
+    $pdo->beginTransaction();
+    $st = $pdo->prepare("SELECT s.*, t.estado AS estado_tutoria, t.cupo_min
+        FROM solicitudes s JOIN tutorias t ON t.id = s.tutoria_id WHERE s.id = ? AND s.estudiante_id = ? FOR UPDATE");
+    $st->execute([$sid, $u["id"]]);
+    $s = $st->fetch();
+    if (!$s) {
+        abortar($pdo, "Solicitud no encontrada", 404);
+    }
+    if (!in_array($s["estado"], ["pendiente", "aceptada"], true)) {
+        abortar($pdo, "Esta solicitud ya no se puede cancelar", 409);
+    }
+
+    if ($s["estado"] === "aceptada") {
+        // Libera el cupo
+        $pdo->prepare("DELETE FROM inscripciones WHERE solicitud_id = ?")->execute([$sid]);
+        // Si la tutoria estaba confirmada y baja del minimo, vuelve a abierta
+        if ($s["estado_tutoria"] === "confirmada" && Cupos::ocupados($pdo, (int)$s["tutoria_id"]) < (int)$s["cupo_min"]) {
+            $pdo->prepare("UPDATE tutorias SET estado = 'abierta' WHERE id = ?")->execute([$s["tutoria_id"]]);
+        }
+    }
+    $pdo->prepare("UPDATE solicitudes SET estado = 'cancelada', fecha_resolucion = NOW() WHERE id = ?")->execute([$sid]);
+    $pdo->commit();
+    Response::success(null, "Solicitud cancelada");
+}
+
 Response::error("Método no permitido", -1, 405);
