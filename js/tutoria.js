@@ -31,7 +31,16 @@ const pintarDetalle = () => {
   let acciones = "";
 
   if (usuario.rol === "estudiante") {
-    acciones = '<button type="button" class="boton" data-accion="solicitar">Solicitar inscripción</button>';
+    const solicitud = t.mi_solicitud;
+    if (solicitud && solicitud.estado !== "cancelada") {
+      acciones = `<p>Tu solicitud: ${insignia(solicitud.estado)}</p>`;
+    } else if (t.estado === "cancelada") {
+      acciones = '<p class="suave">Esta tutoría fue cancelada.</p>';
+    } else if (libres <= 0) {
+      acciones = '<p class="suave">Sin cupos disponibles.</p>';
+    } else {
+      acciones = '<button type="button" class="boton" data-accion="solicitar">Solicitar inscripción</button>';
+    }
   }
 
   $("#detalle").innerHTML = `
