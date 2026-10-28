@@ -8,7 +8,6 @@ $pdo = new Connection();
 $u = Auth::requiere($pdo);
 $metodo = $_SERVER["REQUEST_METHOD"];
 
-// SELECT base: incluye materia, profesor, cupos ocupados y solicitudes pendientes
 const SQL_BASE = "SELECT t.id, t.profesor_id, p.nombre AS profesor, t.materia_id, m.nombre AS materia,
         t.tema, t.titulo, t.descripcion, t.fecha, t.hora_inicio, t.hora_fin,
         t.cupo_min, t.cupo_max, t.estado,
@@ -18,7 +17,6 @@ const SQL_BASE = "SELECT t.id, t.profesor_id, p.nombre AS profesor, t.materia_id
     JOIN profesores p ON p.id = t.profesor_id
     JOIN materias m ON m.id = t.materia_id";
 
-// Valida y normaliza los campos del formulario
 function validar_tutoria(array $d): array
 {
     $c = [
@@ -64,7 +62,6 @@ function validar_tutoria(array $d): array
     return $c;
 }
 
-// Traslape: el mismo profesor no puede tener dos tutorias activas a la misma hora
 function hay_traslape(PDO $pdo, int $profesorId, array $c, int $excluirId = 0): bool
 {
     $st = $pdo->prepare("SELECT 1 FROM tutorias WHERE profesor_id = ? AND fecha = ? AND estado <> 'cancelada'
@@ -80,7 +77,6 @@ function materia_existe(PDO $pdo, int $id): bool
     return (bool)$st->fetch();
 }
 
-// Carga una tutoria y verifica que pertenezca al profesor logueado
 function tutoria_propia(PDO $pdo, int $id, array $u): array
 {
     $st = $pdo->prepare("SELECT * FROM tutorias WHERE id = ?");
@@ -96,7 +92,6 @@ function tutoria_propia(PDO $pdo, int $id, array $u): array
 }
 
 if ($metodo === "GET") {
-    // Detalle de una tutoria
     if (isset($_GET["id"])) {
         $st = $pdo->prepare(SQL_BASE . " WHERE t.id = ?");
         $st->execute([(int)$_GET["id"]]);
@@ -112,7 +107,6 @@ if ($metodo === "GET") {
         Response::success($t);
     }
 
-    // Listado con filtros
     $where = [];
     $args = [];
     if (!empty($_GET["materia_id"])) { $where[] = "t.materia_id = ?"; $args[] = (int)$_GET["materia_id"]; }
@@ -123,7 +117,6 @@ if ($metodo === "GET") {
         $where[] = "t.estado = ?";
         $args[] = $_GET["estado"];
     }
-    // El profesor puede pedir solo las suyas
     if ($u["rol"] === "profesor" && !empty($_GET["mias"])) {
         $where[] = "t.profesor_id = ?";
         $args[] = $u["id"];
@@ -134,7 +127,6 @@ if ($metodo === "GET") {
     $st->execute($args);
     $lista = $st->fetchAll();
 
-    // Para el estudiante, marca en cuales ya tiene solicitud
     if ($u["rol"] === "estudiante") {
         $s = $pdo->prepare("SELECT tutoria_id, estado FROM solicitudes WHERE estudiante_id = ?");
         $s->execute([$u["id"]]);
@@ -173,7 +165,6 @@ if ($metodo === "PUT") {
     $t = tutoria_propia($pdo, (int)($d["id"] ?? 0), $u);
     $ocupados = Cupos::ocupados($pdo, (int)$t["id"]);
 
-    // Solo cambio de estado (confirmar / reabrir / cancelar)
     if (($d["accion"] ?? "") === "estado") {
         $nuevo = $d["estado"] ?? "";
         if (!in_array($nuevo, ["abierta", "confirmada", "cancelada"], true)) {
@@ -186,7 +177,6 @@ if ($metodo === "PUT") {
         Response::success(null, "Estado actualizado a " . $nuevo);
     }
 
-    // Edicion de datos
     $c = validar_tutoria($d);
     if (!materia_existe($pdo, $c["materia_id"])) {
         Response::error("La materia no existe");

@@ -1,11 +1,9 @@
-// Catalogo de tutorias: listado con filtros, y CRUD para profesores.
 let usuario = null;
 
 const iniciar = async () => {
   usuario = await iniciarPagina();
   if (!usuario) return;
 
-  // Materias para el filtro y para el formulario
   const materias = await api("api/materias.php");
   for (const m of materias) {
     $("#f_materia").add(new Option(m.nombre, m.id));
@@ -17,7 +15,6 @@ const iniciar = async () => {
     $("#divMias").classList.remove("oculto");
   }
 
-  // Si viene ?editar=ID desde el detalle, abre el formulario con esa tutoria
   const editar = new URLSearchParams(location.search).get("editar");
   if (editar && usuario.rol === "profesor") {
     try {
@@ -30,7 +27,6 @@ const iniciar = async () => {
   cargar();
 };
 
-// ---------- Listado ----------
 const cargar = async () => {
   const params = new URLSearchParams();
   if ($("#f_materia").value) params.set("materia_id", $("#f_materia").value);
@@ -83,7 +79,6 @@ const tarjeta = (t) => {
     </article>`;
 };
 
-// Un solo listener para todos los botones de las tarjetas (mejor rendimiento que uno por boton)
 $("#lista").addEventListener("click", async (evento) => {
   const boton = evento.target.closest("button[data-accion]");
   if (!boton) return;
@@ -117,7 +112,6 @@ $("#btnLimpiar").addEventListener("click", () => {
   cargar();
 });
 
-// ---------- Formulario crear / editar ----------
 const abrirFormulario = (t = null) => {
   $("#formTutoria").reset();
   $("#errorForm").textContent = "";
@@ -146,7 +140,6 @@ const cerrarFormulario = () => {
 $("#btnNueva").addEventListener("click", () => abrirFormulario());
 $("#btnCancelarForm").addEventListener("click", cerrarFormulario);
 
-// Validacion en el navegador (el servidor vuelve a validar todo)
 const validarFormulario = (d) => {
   if (!d.materia_id) return "Selecciona una materia";
   if (!d.tema) return "El tema es obligatorio";

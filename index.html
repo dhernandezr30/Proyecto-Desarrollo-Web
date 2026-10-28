@@ -39,7 +39,6 @@
 
   <script src="js/api.js"></script>
   <script>
-    // Si ya hay sesion activa, ir directo al panel
     api("api/sesion.php").then(() => { location.href = "panel.html"; }).catch(() => {});
 
     $("#formLogin").addEventListener("submit", async (evento) => {

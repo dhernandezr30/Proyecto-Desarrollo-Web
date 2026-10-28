@@ -16,7 +16,6 @@ if ($correo === "" || $clave === "") {
     Response::error("Ingresa correo y contraseña");
 }
 
-// Se busca primero entre los profesores y luego entre los estudiantes
 foreach (["profesor", "estudiante"] as $rol) {
     $tabla = Auth::tabla($rol);
     $st = $pdo->prepare("SELECT id, nombre, password FROM $tabla WHERE correo = ? AND estado = 1");
@@ -29,5 +28,4 @@ foreach (["profesor", "estudiante"] as $rol) {
     }
 }
 
-// Mensaje generico: no revela si el correo existe
 Response::error("Correo o contraseña incorrectos", -1, 401);

@@ -1,16 +1,8 @@
 <?php
-// Sesion y cookies. Requiere que Configuration.php ya se haya cargado.
-//
-// Hay dos cookies:
-//  - COOKIE_NAME: la sesion de PHP. Se borra al cerrar el navegador.
-//  - COOKIE_NAME_recordar: solo si el usuario marca "Recordarme". Guarda
-//    rol.id.expira.firma; la firma se calcula con COOKIE_KEY, asi que si alguien
-//    cambia el rol o el id en la cookie, la firma ya no coincide y se ignora.
 class Auth
 {
     private const TABLAS = ["profesor" => "profesores", "estudiante" => "estudiantes"];
 
-    // Usuario logueado o null. Si no hay sesion, intenta con la cookie "Recordarme".
     public static function usuario(PDO $pdo): ?array
     {
         if (isset($_SESSION["id"], $_SESSION["rol"])) {
@@ -19,7 +11,6 @@ class Auth
         return self::restaurarDesdeCookie($pdo);
     }
 
-    // Exige sesion y, opcionalmente, un rol ("profesor" o "estudiante")
     public static function requiere(PDO $pdo, ?string $rol = null): array
     {
         $usuario = self::usuario($pdo);
@@ -32,7 +23,6 @@ class Auth
         return $usuario;
     }
 
-    // Tabla de cada rol ("profesor" => "profesores")
     public static function tabla(string $rol): ?string
     {
         return self::TABLAS[$rol] ?? null;
@@ -68,7 +58,6 @@ class Auth
         }
         [$rol, $id, $expira, $firma] = $partes;
 
-        // La firma debe coincidir y la cookie no debe haber vencido
         if (!hash_equals(self::firmar("$rol.$id.$expira"), $firma) || (int)$expira < time()) {
             return null;
         }

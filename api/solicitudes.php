@@ -8,7 +8,6 @@ $pdo = new Connection();
 $u = Auth::requiere($pdo);
 $metodo = $_SERVER["REQUEST_METHOD"];
 
-// Cancela la transaccion abierta y responde con error
 function abortar(PDO $pdo, string $mensaje, int $status = 400): void
 {
     if ($pdo->inTransaction()) {
@@ -19,7 +18,6 @@ function abortar(PDO $pdo, string $mensaje, int $status = 400): void
 
 if ($metodo === "GET") {
     if ($u["rol"] === "estudiante") {
-        // Historial completo de mis solicitudes
         $st = $pdo->prepare("SELECT s.id, s.estado, s.fecha_solicitud, s.fecha_resolucion,
                 t.id AS tutoria_id, t.titulo, t.tema, m.nombre AS materia, p.nombre AS profesor,
                 t.fecha, t.hora_inicio, t.hora_fin, t.estado AS estado_tutoria
@@ -33,7 +31,6 @@ if ($metodo === "GET") {
         Response::success($st->fetchAll());
     }
 
-    // Profesor: solicitudes de una de sus tutorias
     $tid = (int)($_GET["tutoria_id"] ?? 0);
     $chk = $pdo->prepare("SELECT 1 FROM tutorias WHERE id = ? AND profesor_id = ?");
     $chk->execute([$tid, $u["id"]]);
@@ -49,7 +46,6 @@ if ($metodo === "GET") {
     Response::success($st->fetchAll());
 }
 
-// El estudiante solicita una tutoria
 if ($metodo === "POST") {
     Auth::requiere($pdo, "estudiante");
     $tid = (int)(Request::body()["tutoria_id"] ?? 0);
@@ -76,7 +72,6 @@ if ($metodo === "POST") {
     $previa = $st->fetch();
 
     if ($previa) {
-        // Solo se puede volver a solicitar si el propio estudiante la cancelo
         if ($previa["estado"] !== "cancelada") {
             abortar($pdo, "Ya tienes una solicitud para esta tutoría (" . $previa["estado"] . ")", 409);
         }
@@ -88,7 +83,6 @@ if ($metodo === "POST") {
     Response::success(null, "Solicitud enviada, queda pendiente de aprobación", 201);
 }
 
-// El profesor acepta o rechaza
 if ($metodo === "PUT") {
     Auth::requiere($pdo, "profesor");
     $d = Request::body();
@@ -117,7 +111,6 @@ if ($metodo === "PUT") {
     }
 
     if ($nuevo === "aceptada") {
-        // Bloquea la fila de la tutoria para que dos aceptaciones simultaneas no sobrepasen el cupo
         $pdo->prepare("SELECT id FROM tutorias WHERE id = ? FOR UPDATE")->execute([$s["tutoria_id"]]);
         if (Cupos::ocupados($pdo, (int)$s["tutoria_id"]) >= (int)$s["cupo_max"]) {
             abortar($pdo, "Sin cupos disponibles: se alcanzó el cupo máximo", 409);
@@ -130,7 +123,6 @@ if ($metodo === "PUT") {
     Response::success(null, "Solicitud " . $nuevo);
 }
 
-// El estudiante cancela su solicitud (pendiente o ya aceptada)
 if ($metodo === "DELETE") {
     Auth::requiere($pdo, "estudiante");
     $sid = (int)(Request::body()["id"] ?? $_GET["id"] ?? 0);
@@ -148,9 +140,7 @@ if ($metodo === "DELETE") {
     }
 
     if ($s["estado"] === "aceptada") {
-        // Libera el cupo
         $pdo->prepare("DELETE FROM inscripciones WHERE solicitud_id = ?")->execute([$sid]);
-        // Si la tutoria estaba confirmada y baja del minimo, vuelve a abierta
         if ($s["estado_tutoria"] === "confirmada" && Cupos::ocupados($pdo, (int)$s["tutoria_id"]) < (int)$s["cupo_min"]) {
             $pdo->prepare("UPDATE tutorias SET estado = 'abierta' WHERE id = ?")->execute([$s["tutoria_id"]]);
         }

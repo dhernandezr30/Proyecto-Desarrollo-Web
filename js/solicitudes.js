@@ -1,4 +1,3 @@
-// Pagina "Mis solicitudes" del estudiante.
 let solicitudes = [];
 
 const iniciar = async () => {
