@@ -47,7 +47,7 @@ const pintarDetalle = () => {
       acciones = '<button type="button" class="boton" data-accion="solicitar">Solicitar inscripción</button>';
     }
   } else if (esDueno) {
-    acciones = `<a class="boton secundario" href="tutorias.html?editar=${t.id}">Editar datos</a>`;
+    acciones = `<a class="boton secundario" href="tutorias.php?editar=${t.id}">Editar datos</a>`;
     if (t.estado === "abierta") {
       acciones += ` <button type="button" class="boton ok" data-accion="estado" data-estado="confirmada"
         ${faltan > 0 ? 'disabled title="Aún no se alcanza el cupo mínimo"' : ""}>Confirmar tutoría</button>`;

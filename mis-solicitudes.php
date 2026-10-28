@@ -1,3 +1,7 @@
+<?php
+require_once(__DIR__ . "/api/core/Pagina.php");
+Pagina::privada("estudiante");
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

@@ -1,3 +1,7 @@
+<?php
+require_once(__DIR__ . "/api/core/Pagina.php");
+Pagina::publica();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -40,7 +44,7 @@
         <button type="submit" class="boton ancho">Crear cuenta</button>
       </form>
 
-      <p class="suave sin-margen-abajo">¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
+      <p class="suave sin-margen-abajo">¿Ya tienes cuenta? <a href="index.php">Inicia sesión</a></p>
     </section>
   </main>
 
@@ -76,7 +80,7 @@
 
       try {
         await accion("api/registro.php", "POST", datos);
-        setTimeout(() => { location.href = "index.html"; }, 1200);
+        setTimeout(() => { location.href = "index.php"; }, 1200);
       } catch (err) {
         error.textContent = err.message;
       }
