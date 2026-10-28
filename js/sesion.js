@@ -1,6 +1,3 @@
-// Control de sesion en el navegador. La seguridad real esta en el backend (PHP);
-// esto solo redirige y muestra el menu segun el rol.
-
 const iniciarPagina = async (rolRequerido = null) => {
   let usuario;
   try {
@@ -33,7 +30,6 @@ const pintarMenu = (usuario) => {
     try {
       await api("api/logout.php", "POST", {});
     } catch (e) {
-      // se redirige igual
     }
     location.href = "index.html";
   });

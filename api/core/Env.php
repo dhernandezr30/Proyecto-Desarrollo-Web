@@ -1,5 +1,4 @@
 <?php
-// Lee el archivo .env y entrega sus valores con Env::get()
 class Env
 {
     private static array $variables = [];
@@ -15,7 +14,6 @@ class Env
 
         foreach (file($ruta, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $linea) {
             $linea = trim($linea);
-            // Se ignoran comentarios (#) y lineas sin "="
             if ($linea === '' || $linea[0] === '#' || !str_contains($linea, '=')) {
                 continue;
             }
@@ -26,7 +24,6 @@ class Env
 
     public static function get(string $clave, ?string $porDefecto = null): ?string
     {
-        // Una variable de entorno del sistema tiene prioridad sobre el .env
         $entorno = getenv($clave);
         if ($entorno !== false) {
             return $entorno;

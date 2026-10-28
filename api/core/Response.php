@@ -1,7 +1,4 @@
 <?php
-// Respuestas JSON uniformes:
-//   exito: { "success": true,  "message": "...", "data": ... }
-//   error: { "success": false, "message": "...", "code": -1 }
 class Response
 {
     public static function success(mixed $data = null, string $message = "OK", int $status = 200): void

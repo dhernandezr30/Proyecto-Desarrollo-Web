@@ -1,4 +1,3 @@
-// Detalle de una tutoria: el estudiante solicita/cancela; el profesor dueno gestiona solicitudes.
 const tutoriaId = Number(new URLSearchParams(location.search).get("id"));
 let usuario = null;
 let tutoria = null;
@@ -101,7 +100,6 @@ $("#detalle").addEventListener("click", async (evento) => {
   recargar();
 });
 
-// ---------- Solicitudes (profesor dueno) ----------
 const cargarSolicitudes = async () => {
   $("#zonaSolicitudes").classList.remove("oculto");
   try {

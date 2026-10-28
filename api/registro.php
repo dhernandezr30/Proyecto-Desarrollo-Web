@@ -28,7 +28,6 @@ if (strlen($clave) < 6) {
     Response::error("La contraseña debe tener al menos 6 caracteres");
 }
 
-// El correo debe ser unico en ambas tablas para que el login no sea ambiguo
 $st = $pdo->prepare("SELECT 1 FROM profesores WHERE correo = ? UNION SELECT 1 FROM estudiantes WHERE correo = ?");
 $st->execute([$correo, $correo]);
 if ($st->fetch()) {

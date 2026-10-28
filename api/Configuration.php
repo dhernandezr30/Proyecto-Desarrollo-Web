@@ -2,7 +2,6 @@
 require_once(__DIR__ . "/core/Env.php");
 Env::load(__DIR__ . "/core/.env");
 
-#   SECURITY & SESSIONS
 ini_set('session.cookie_secure', Env::get('COOKIE_SECURE', '1'));
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Strict');
@@ -12,7 +11,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-#   ENVIRONMENT DEFINITIONS
 define('COOKIE_NAME', Env::get('COOKIE_NAME', 'TUTORIAS_SID'));
 define('COOKIE_KEY', Env::get('COOKIE_KEY'));
 define('COOKIE_SECURE', Env::get('COOKIE_SECURE', '1') === '1');

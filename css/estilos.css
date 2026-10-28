@@ -1,237 +1,114 @@
-/* Sistema de Tutorias - estilos
-   Mobile first: lo de abajo es para celular (hasta 767px).
-   Luego se agregan reglas para tablet (768px+) y escritorio (1024px+). */
-
-:root {
-  --primario: #3b5bdb;
-  --primario-oscuro: #2f49b0;
-  --fondo: #f4f6fb;
-  --tarjeta: #ffffff;
-  --texto: #1f2937;
-  --suave: #6b7280;
-  --borde: #e2e6ef;
-  --ok: #2b8a3e;
-  --aviso: #e67700;
-  --peligro: #c92a2a;
-  --radio: 10px;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  color: #222;
 }
 
 * { box-sizing: border-box; }
 
-body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.5;
-  background: var(--fondo);
-  color: var(--texto);
-}
-
-a { color: var(--primario); }
-
-h1 { font-size: 1.5rem; margin: 0 0 12px; }
-h2 { font-size: 1.25rem; margin: 0 0 12px; }
-h3 { font-size: 1.05rem; margin: 6px 0 2px; }
-
-/* ---------- Encabezado / menu (celular: apilado y centrado) ---------- */
 .encabezado {
-  background: var(--primario);
-  color: #fff;
-  padding: 0 16px;
+  background: #2c5aa0;
+  color: white;
+  padding: 10px;
 }
-.encabezado .contenido {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 0;
-}
-.marca { font-size: 1.15rem; font-weight: 700; margin: 0; }
-.menu { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; }
+.marca { font-weight: bold; margin: 0 0 5px; }
 .menu a, .menu button {
-  color: #fff;
-  text-decoration: none;
-  background: transparent;
-  border: 0;
+  color: white;
+  background: none;
+  border: none;
   font: inherit;
-  padding: 6px 12px;
-  border-radius: 6px;
+  margin-right: 10px;
   cursor: pointer;
 }
-.menu a:hover, .menu button:hover, .menu a.activo { background: rgba(255, 255, 255, .2); }
-.menu .usuario { font-size: .85rem; opacity: .9; padding: 0 8px; }
+.menu a.activo { text-decoration: underline; }
 
-main { max-width: 1100px; margin: 0 auto; padding: 14px 16px 40px; }
+main { padding: 15px; max-width: 1000px; margin: 0 auto; }
 
-/* ---------- Cajas y formularios ---------- */
 .caja {
-  background: var(--tarjeta);
-  border: 1px solid var(--borde);
-  border-radius: var(--radio);
-  padding: 16px;
-  margin-bottom: 16px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
 }
-.separado { margin-top: 16px; }
+.centrado .caja { max-width: 400px; margin: 40px auto; }
+.separado { margin-top: 15px; }
 
-.centrado {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.centrado .caja { width: 100%; max-width: 400px; margin-bottom: 0; }
-
-label { display: block; font-size: .9rem; font-weight: 600; margin: 10px 0 4px; }
-label.opcion { font-weight: 400; display: flex; align-items: center; gap: 8px; }
+label { display: block; margin: 8px 0 3px; }
+input, select, textarea { width: 100%; padding: 6px; border: 1px solid #aaa; font: inherit; }
 label.opcion input { width: auto; }
-
-input, select, textarea {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--borde);
-  border-radius: 6px;
-  font: inherit;
-  background: #fff;
-}
-input:focus, select:focus, textarea:focus,
-.boton:focus-visible, .menu a:focus-visible, .menu button:focus-visible {
-  outline: 2px solid var(--primario);
-  outline-offset: 2px;
-}
-textarea { resize: vertical; min-height: 70px; }
-
-/* Filas de campos: 1 columna en celular */
-.fila { display: grid; grid-template-columns: 1fr; gap: 12px; }
+input::-webkit-calendar-picker-indicator { display: none; }
+.campo-corto { max-width: 200px; }
 
 .boton {
-  display: inline-block;
-  background: var(--primario);
-  color: #fff;
-  border: 0;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font: inherit;
-  font-weight: 600;
+  background: #2c5aa0;
+  color: white;
+  border: none;
+  padding: 7px 14px;
   cursor: pointer;
   text-decoration: none;
+  display: inline-block;
 }
-.boton:hover { background: var(--primario-oscuro); }
-.boton.secundario { background: #e9ecf5; color: var(--texto); }
-.boton.secundario:hover { background: #dbe0ee; }
-.boton.peligro { background: var(--peligro); }
-.boton.ok { background: var(--ok); }
-.boton.chico { padding: 4px 10px; font-size: .85rem; }
+.boton.secundario { background: #888; }
+.boton.peligro { background: #c0392b; }
+.boton.ok { background: #27ae60; }
+.boton.chico { padding: 4px 8px; font-size: 0.85em; }
 .boton.ancho { width: 100%; }
-.boton:disabled { opacity: .5; cursor: not-allowed; }
+.boton:disabled { opacity: 0.5; }
 
-.acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.acciones { margin-top: 10px; }
+.acciones .boton { margin: 0 5px 5px 0; }
 .sin-margen-arriba { margin-top: 0; }
 .sin-margen-abajo { margin-bottom: 0; }
-.error-campo { color: var(--peligro); font-size: .85rem; min-height: 1.2em; margin: 8px 0 0; }
-.suave { color: var(--suave); font-size: .9rem; }
-.campo-corto { max-width: 220px; }
+.error-campo { color: #c0392b; font-size: 0.9em; }
+.suave, .datos { color: #666; font-size: 0.9em; }
+.vacio { text-align: center; color: #666; }
 
-/* ---------- Filtros: 1 columna en celular ---------- */
-.filtros { display: grid; grid-template-columns: 1fr; gap: 12px; align-items: end; }
-.filtros label { margin-top: 0; }
+.insignia { font-size: 0.8em; font-weight: bold; padding: 1px 6px; background: #ddd; }
+.insignia.abierta, .insignia.aceptada { color: #27ae60; }
+.insignia.confirmada { color: #2c5aa0; }
+.insignia.pendiente { color: #d68910; }
+.insignia.cancelada, .insignia.rechazada { color: #c0392b; }
 
-/* ---------- Listado de tutorias: 1 columna en celular ---------- */
-.rejilla { display: grid; grid-template-columns: 1fr; gap: 16px; }
-.rejilla .vacio { grid-column: 1 / -1; }
-.tutoria { display: flex; flex-direction: column; margin-bottom: 0; }
-.tutoria .datos { margin: 8px 0; font-size: .9rem; color: var(--suave); }
-.tutoria .acciones { margin-top: auto; padding-top: 10px; }
+.cupo { margin: 8px 0; font-size: 0.9em; }
 
-.insignia {
-  display: inline-block;
-  font-size: .75rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: #e9ecf5;
-  color: var(--texto);
-  text-transform: uppercase;
-  letter-spacing: .03em;
-}
-.insignia.abierta, .insignia.aceptada { background: #d3f9d8; color: var(--ok); }
-.insignia.confirmada { background: #d0ebff; color: #1864ab; }
-.insignia.pendiente { background: #fff3bf; color: #a65a00; }
-.insignia.cancelada, .insignia.rechazada { background: #ffe3e3; color: var(--peligro); }
-.insignia.materia { background: #e5dbff; color: #5f3dc4; }
-
-/* Barra de cupos */
-.cupo { margin: 8px 0; font-size: .85rem; }
-.barra { position: relative; height: 10px; background: #e9ecf5; border-radius: 5px; margin-top: 4px; }
-.barra .lleno { height: 100%; background: var(--primario); border-radius: 5px; max-width: 100%; }
-.barra .lleno.completo { background: var(--peligro); }
-.barra .lleno.minimo { background: var(--ok); }
-.barra .marca-min { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--texto); }
-
-/* ---------- Tablas ---------- */
 .tabla-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
-th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--borde); }
-th { color: var(--suave); font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; }
-.col-cupos { min-width: 180px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 6px; border-bottom: 1px solid #ccc; }
 
-/* ---------- Panel: 2 columnas en celular ---------- */
-.indicadores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
-.indicador { text-align: center; margin-bottom: 0; padding: 12px 8px; }
-.indicador .numero { font-size: 1.75rem; font-weight: 700; color: var(--primario); }
-.indicador .nombre { color: var(--suave); font-size: .85rem; }
+.indicador { text-align: center; }
+.indicador .numero { font-size: 1.8em; font-weight: bold; }
 
-/* ---------- Avisos ---------- */
 .aviso {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
-  max-width: calc(100% - 32px);
-  padding: 12px 18px;
-  border-radius: 8px;
-  color: #fff;
-  background: var(--ok);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .2);
-  z-index: 10;
+  bottom: 10px;
+  right: 10px;
+  padding: 10px 15px;
+  background: #27ae60;
+  color: white;
 }
-.aviso.error { background: var(--peligro); }
+.aviso.error { background: #c0392b; }
 
-.vacio { text-align: center; color: var(--suave); padding: 30px 0; }
 .oculto { display: none !important; }
 
-/* Texto solo para lectores de pantalla (no se ve, pero se lee) */
 .solo-lectores {
   position: absolute;
   width: 1px;
   height: 1px;
-  margin: -1px;
-  padding: 0;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
 
-/* ================= TABLET: 768px en adelante ================= */
 @media (min-width: 768px) {
-  h1 { font-size: 1.75rem; }
-
-  .encabezado .contenido { flex-direction: row; justify-content: space-between; }
-  main { padding: 24px 24px 40px; }
-
-  .fila { grid-template-columns: repeat(2, 1fr); }
-  .filtros { grid-template-columns: repeat(3, 1fr); }
-  .rejilla { grid-template-columns: repeat(2, 1fr); }
-  .indicadores { grid-template-columns: repeat(3, 1fr); }
+  .fila, .filtros, .rejilla, .indicadores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .rejilla .caja { margin-bottom: 0; }
+  .rejilla .vacio { grid-column: 1 / -1; }
 }
 
-/* ================= ESCRITORIO: 1024px en adelante ================= */
 @media (min-width: 1024px) {
-  .fila { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-  .filtros { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-  .rejilla { grid-template-columns: repeat(3, 1fr); }
   .indicadores { grid-template-columns: repeat(5, 1fr); }
-  .indicador .numero { font-size: 2rem; }
 }
