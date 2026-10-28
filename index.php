@@ -1,3 +1,7 @@
+<?php
+require_once(__DIR__ . "/api/core/Pagina.php");
+Pagina::publica();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,13 +37,13 @@
         <button type="submit" class="boton ancho">Entrar</button>
       </form>
 
-      <p class="suave sin-margen-abajo">¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
+      <p class="suave sin-margen-abajo">¿No tienes cuenta? <a href="registro.php">Regístrate</a></p>
     </section>
   </main>
 
   <script src="js/api.js"></script>
   <script>
-    api("api/sesion.php").then(() => { location.href = "panel.html"; }).catch(() => {});
+    api("api/sesion.php").then(() => { location.href = "panel.php"; }).catch(() => {});
 
     $("#formLogin").addEventListener("submit", async (evento) => {
       evento.preventDefault();
@@ -59,7 +63,7 @@
 
       try {
         await api("api/login.php", "POST", { correo, password, recordar: $("#recordar").checked });
-        location.href = "panel.html";
+        location.href = "panel.php";
       } catch (err) {
         error.textContent = err.message;
       }

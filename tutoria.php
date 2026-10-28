@@ -1,3 +1,7 @@
+<?php
+require_once(__DIR__ . "/api/core/Pagina.php");
+Pagina::privada();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,7 +26,7 @@
   </header>
 
   <main>
-    <p><a href="tutorias.html">&larr; Volver a tutorías</a></p>
+    <p><a href="tutorias.php">&larr; Volver a tutorías</a></p>
 
     <section id="detalle" class="caja" aria-live="polite">Cargando...</section>
 

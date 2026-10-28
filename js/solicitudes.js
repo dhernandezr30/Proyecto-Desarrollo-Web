@@ -25,7 +25,7 @@ const pintar = () => {
 const fila = (s) => {
   const cancelable = ["pendiente", "aceptada"].includes(s.estado);
   return `<tr>
-      <td><a href="tutoria.html?id=${s.tutoria_id}">${esc(s.titulo)}</a> ${s.estado_tutoria === "cancelada" ? insignia("cancelada") : ""}</td>
+      <td><a href="tutoria.php?id=${s.tutoria_id}">${esc(s.titulo)}</a> ${s.estado_tutoria === "cancelada" ? insignia("cancelada") : ""}</td>
       <td>${esc(s.materia)} / ${esc(s.tema)}</td>
       <td>${esc(s.profesor)}</td>
       <td>${fmtFecha(s.fecha)} ${fmtHora(s.hora_inicio)}</td>

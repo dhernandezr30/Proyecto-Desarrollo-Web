@@ -3,11 +3,11 @@ const iniciarPagina = async (rolRequerido = null) => {
   try {
     usuario = await api("api/sesion.php");
   } catch (e) {
-    location.href = "index.html";
+    location.href = "index.php";
     return null;
   }
   if (rolRequerido && usuario.rol !== rolRequerido) {
-    location.href = "panel.html";
+    location.href = "panel.php";
     return null;
   }
   pintarMenu(usuario);
@@ -15,10 +15,10 @@ const iniciarPagina = async (rolRequerido = null) => {
 };
 
 const pintarMenu = (usuario) => {
-  const actual = location.pathname.split("/").pop() || "index.html";
-  const enlaces = [["panel.html", "Panel"], ["tutorias.html", "Tutorías"]];
+  const actual = location.pathname.split("/").pop() || "index.php";
+  const enlaces = [["panel.php", "Panel"], ["tutorias.php", "Tutorías"]];
   if (usuario.rol === "estudiante") {
-    enlaces.push(["mis-solicitudes.html", "Mis solicitudes"]);
+    enlaces.push(["mis-solicitudes.php", "Mis solicitudes"]);
   }
 
   $("#menu").innerHTML = enlaces.map(([url, texto]) =>
@@ -31,7 +31,7 @@ const pintarMenu = (usuario) => {
       await api("api/logout.php", "POST", {});
     } catch (e) {
     }
-    location.href = "index.html";
+    location.href = "index.php";
   });
 };
 

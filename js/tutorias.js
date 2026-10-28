@@ -49,7 +49,7 @@ const cargar = async () => {
 const tarjeta = (t) => {
   const esDueno = usuario.rol === "profesor" && t.profesor_id === usuario.id;
   const nombre = esc(t.titulo);
-  let botones = `<a class="boton secundario chico" href="tutoria.html?id=${t.id}" aria-label="Ver detalle de ${nombre}">Ver detalle</a>`;
+  let botones = `<a class="boton secundario chico" href="tutoria.php?id=${t.id}" aria-label="Ver detalle de ${nombre}">Ver detalle</a>`;
 
   if (usuario.rol === "estudiante") {
     const solicitud = t.mi_solicitud_estado;
@@ -134,7 +134,7 @@ const abrirFormulario = (t = null) => {
 
 const cerrarFormulario = () => {
   $("#formTutoria").classList.add("oculto");
-  if (location.search) history.replaceState(null, "", "tutorias.html");
+  if (location.search) history.replaceState(null, "", "tutorias.php");
 };
 
 $("#btnNueva").addEventListener("click", () => abrirFormulario());
