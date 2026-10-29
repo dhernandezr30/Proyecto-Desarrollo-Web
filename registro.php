@@ -8,13 +8,14 @@ Pagina::publica();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Crear cuenta - Sistema de Tutorías</title>
-  <meta name="description" content="Crea tu cuenta de estudiante o profesor en el Sistema de Tutorías y empieza a solicitar u ofrecer tutorías.">
+  <meta name="description" content="Crea tu cuenta de estudiante en el Sistema de Tutorías y empieza a solicitar tutorías.">
   <meta property="og:title" content="Crear cuenta - Sistema de Tutorías">
-  <meta property="og:description" content="Regístrate como estudiante para solicitar tutorías o como profesor para crearlas.">
+  <meta property="og:description" content="Regístrate como estudiante para solicitar tutorías.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sistema de Tutorías">
   <meta property="og:locale" content="es_GT">
   <link rel="stylesheet" href="css/estilos.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
 <body>
   <main class="centrado">
@@ -22,12 +23,6 @@ Pagina::publica();
       <h1 id="titulo">Crear cuenta</h1>
 
       <form id="formRegistro" novalidate>
-        <label for="rol">Soy</label>
-        <select id="rol" name="rol">
-          <option value="estudiante">Estudiante</option>
-          <option value="profesor">Profesor</option>
-        </select>
-
         <label for="nombre">Nombre completo</label>
         <input type="text" id="nombre" name="nombre" maxlength="255" autocomplete="name" required>
 
@@ -54,7 +49,6 @@ Pagina::publica();
       evento.preventDefault();
       const error = $("#error");
       const datos = {
-        rol: $("#rol").value,
         nombre: $("#nombre").value.trim(),
         correo: $("#correo").value.trim(),
         password: $("#password").value,
