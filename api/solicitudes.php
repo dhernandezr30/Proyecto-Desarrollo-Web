@@ -60,7 +60,7 @@ if ($metodo === "POST") {
     if ($t["estado"] === "cancelada") {
         abortar($pdo, "Esta tutoría fue cancelada");
     }
-    if ($t["fecha"] < date("Y-m-d")) {
+    if ($t["fecha"] . " " . $t["hora_inicio"] <= date("Y-m-d H:i:s")) {
         abortar($pdo, "Esta tutoría ya pasó");
     }
     if (Cupos::ocupados($pdo, $tid) >= (int)$t["cupo_max"]) {
@@ -93,7 +93,7 @@ if ($metodo === "PUT") {
     }
 
     $pdo->beginTransaction();
-    $st = $pdo->prepare("SELECT s.*, t.profesor_id, t.estado AS estado_tutoria, t.cupo_max
+    $st = $pdo->prepare("SELECT s.*, t.profesor_id, t.estado AS estado_tutoria, t.cupo_max, t.fecha, t.hora_inicio
         FROM solicitudes s JOIN tutorias t ON t.id = s.tutoria_id WHERE s.id = ? FOR UPDATE");
     $st->execute([$sid]);
     $s = $st->fetch();
@@ -111,6 +111,9 @@ if ($metodo === "PUT") {
     }
 
     if ($nuevo === "aceptada") {
+        if ($s["fecha"] . " " . $s["hora_inicio"] <= date("Y-m-d H:i:s")) {
+            abortar($pdo, "La tutoría ya empezó: no se pueden aceptar más estudiantes");
+        }
         $pdo->prepare("SELECT id FROM tutorias WHERE id = ? FOR UPDATE")->execute([$s["tutoria_id"]]);
         if (Cupos::ocupados($pdo, (int)$s["tutoria_id"]) >= (int)$s["cupo_max"]) {
             abortar($pdo, "Sin cupos disponibles: se alcanzó el cupo máximo", 409);
