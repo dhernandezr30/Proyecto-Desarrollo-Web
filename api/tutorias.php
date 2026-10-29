@@ -103,6 +103,9 @@ if ($metodo === "GET") {
             $s = $pdo->prepare("SELECT id, estado FROM solicitudes WHERE tutoria_id = ? AND estudiante_id = ?");
             $s->execute([$t["id"], $u["id"]]);
             $t["mi_solicitud"] = $s->fetch() ?: null;
+            if (!$t["mi_solicitud"] && $t["fecha"] . " " . $t["hora_inicio"] <= date("Y-m-d H:i:s")) {
+                Response::error("Esta tutoría ya no está disponible", -1, 404);
+            }
         }
         Response::success($t);
     }
@@ -120,6 +123,10 @@ if ($metodo === "GET") {
     if ($u["rol"] === "profesor" && !empty($_GET["mias"])) {
         $where[] = "t.profesor_id = ?";
         $args[] = $u["id"];
+    }
+    if ($u["rol"] === "estudiante") {
+        $where[] = "TIMESTAMP(t.fecha, t.hora_inicio) > ?";
+        $args[] = date("Y-m-d H:i:s");
     }
 
     $sql = SQL_BASE . ($where ? " WHERE " . implode(" AND ", $where) : "") . " ORDER BY t.fecha, t.hora_inicio";
